@@ -86,4 +86,48 @@ describe("Scoreboard", () => {
       "Germany 2 - France 2",
     ]);
   });
+
+  it("throws when updating a match that does not exist", () => {
+    const scoreboard = new Scoreboard();
+
+    expect(() => scoreboard.updateScore("Mexico", "Canada", 1, 1)).toThrow(
+      "Match not found",
+    );
+  });
+
+  it("throws when finishing a match that does not exist", () => {
+    const scoreboard = new Scoreboard();
+
+    expect(() => scoreboard.finishMatch("Mexico", "Canada")).toThrow(
+      "Match not found",
+    );
+  });
+
+  it("does not allow starting the same match twice", () => {
+    const scoreboard = new Scoreboard();
+
+    scoreboard.startMatch("Mexico", "Canada");
+
+    expect(() => scoreboard.startMatch("Mexico", "Canada")).toThrow(
+      "Match already exists",
+    );
+  });
+
+  it("does not allow negative scores", () => {
+    const scoreboard = new Scoreboard();
+
+    scoreboard.startMatch("Mexico", "Canada");
+
+    expect(() => scoreboard.updateScore("Mexico", "Canada", -1, 2)).toThrow(
+      "Scores cannot be negative",
+    );
+  });
+
+  it("does not allow the same team to play against itself", () => {
+    const scoreboard = new Scoreboard();
+
+    expect(() => scoreboard.startMatch("Mexico", "Mexico")).toThrow(
+      "Teams must be different",
+    );
+  });
 });

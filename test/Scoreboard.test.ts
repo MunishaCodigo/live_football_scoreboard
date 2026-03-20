@@ -52,4 +52,38 @@ describe("Scoreboard", () => {
       awayScore: 0,
     });
   });
+
+  it("returns matches ordered by total score descending and then by most recently started", () => {
+    const scoreboard = new Scoreboard();
+
+    scoreboard.startMatch("Mexico", "Canada");
+    scoreboard.updateScore("Mexico", "Canada", 0, 5);
+
+    scoreboard.startMatch("Spain", "Brazil");
+    scoreboard.updateScore("Spain", "Brazil", 10, 2);
+
+    scoreboard.startMatch("Germany", "France");
+    scoreboard.updateScore("Germany", "France", 2, 2);
+
+    scoreboard.startMatch("Uruguay", "Italy");
+    scoreboard.updateScore("Uruguay", "Italy", 6, 6);
+
+    scoreboard.startMatch("Argentina", "Australia");
+    scoreboard.updateScore("Argentina", "Australia", 3, 1);
+
+    const summary = scoreboard.getSummary();
+
+    expect(
+      summary.map(
+        (match) =>
+          `${match.homeTeam} ${match.homeScore} - ${match.awayTeam} ${match.awayScore}`,
+      ),
+    ).toEqual([
+      "Uruguay 6 - Italy 6",
+      "Spain 10 - Brazil 2",
+      "Mexico 0 - Canada 5",
+      "Argentina 3 - Australia 1",
+      "Germany 2 - France 2",
+    ]);
+  });
 });

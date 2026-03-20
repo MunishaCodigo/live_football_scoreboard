@@ -3,17 +3,22 @@ type Match = {
   awayTeam: string;
   homeScore: number;
   awayScore: number;
+  startedOrder: number;
 };
 
 export class Scoreboard {
   private readonly matches: Match[] = [];
+  private startSequence = 0;
 
   public startMatch(homeTeam: string, awayTeam: string): void {
+    this.startSequence += 1;
+
     this.matches.push({
       homeTeam,
       awayTeam,
       homeScore: 0,
       awayScore: 0,
+      startedOrder: this.startSequence,
     });
   }
 
@@ -47,7 +52,18 @@ export class Scoreboard {
     this.matches.splice(matchIndex, 1);
   }
 
-  public getSummary(): Match[] {
-    return [...this.matches];
+  public getSummary(): Array<Omit<Match, "startedOrder">> {
+    return [...this.matches]
+      .sort((a, b) => {
+        const scoreDiff =
+          b.homeScore + b.awayScore - (a.homeScore + a.awayScore);
+
+        if (scoreDiff !== 0) {
+          return scoreDiff;
+        }
+
+        return b.startedOrder - a.startedOrder;
+      })
+      .map(({ startedOrder, ...rest }) => rest);
   }
 }

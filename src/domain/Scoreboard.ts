@@ -1,5 +1,6 @@
 import { Match } from "./Match";
 import { DomainError } from "../errors/DomainError";
+import { MatchSummary } from "./MatchSummary";
 
 export class Scoreboard {
   private readonly matches: Match[] = [];
@@ -40,12 +41,7 @@ export class Scoreboard {
     this.matches.splice(matchIndex, 1);
   }
 
-  public getSummary(): Array<{
-    homeTeam: string;
-    awayTeam: string;
-    homeScore: number;
-    awayScore: number;
-  }> {
+  public getSummary(): MatchSummary[] {
     return [...this.matches]
       .sort((left, right) => {
         if (right.totalScore !== left.totalScore) {

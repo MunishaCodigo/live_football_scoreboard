@@ -1,4 +1,5 @@
 import { DomainError } from "../errors/DomainError";
+import type { MatchSummary } from "./MatchSummary";
 
 export class Match {
   public readonly homeTeam: string;
@@ -48,12 +49,7 @@ export class Match {
     return this._homeScore + this._awayScore;
   }
 
-  public toSummaryItem(): {
-    homeTeam: string;
-    awayTeam: string;
-    homeScore: number;
-    awayScore: number;
-  } {
+  public toSummaryItem(): MatchSummary {
     return {
       homeTeam: this.homeTeam,
       awayTeam: this.awayTeam,

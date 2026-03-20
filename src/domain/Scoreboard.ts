@@ -11,6 +11,18 @@ export class Scoreboard {
   private startSequence = 0;
 
   public startMatch(homeTeam: string, awayTeam: string): void {
+    if (homeTeam === awayTeam) {
+      throw new Error("Teams must be different");
+    }
+
+    const existingMatch = this.matches.find(
+      (item) => item.homeTeam === homeTeam && item.awayTeam === awayTeam,
+    );
+
+    if (existingMatch) {
+      throw new Error("Match already exists");
+    }
+
     this.startSequence += 1;
 
     this.matches.push({
@@ -28,6 +40,10 @@ export class Scoreboard {
     homeScore: number,
     awayScore: number,
   ): void {
+    if (homeScore < 0 || awayScore < 0) {
+      throw new Error("Scores cannot be negative");
+    }
+
     const match = this.matches.find(
       (item) => item.homeTeam === homeTeam && item.awayTeam === awayTeam,
     );

@@ -1,3 +1,5 @@
+import { DomainError } from "../errors/DomainError";
+
 type Match = {
   homeTeam: string;
   awayTeam: string;
@@ -12,7 +14,7 @@ export class Scoreboard {
 
   public startMatch(homeTeam: string, awayTeam: string): void {
     if (homeTeam === awayTeam) {
-      throw new Error("Teams must be different");
+      throw new DomainError("Teams must be different");
     }
 
     const existingMatch = this.matches.find(
@@ -20,7 +22,7 @@ export class Scoreboard {
     );
 
     if (existingMatch) {
-      throw new Error("Match already exists");
+      throw new DomainError("Match already exists");
     }
 
     this.startSequence += 1;
@@ -41,7 +43,7 @@ export class Scoreboard {
     awayScore: number,
   ): void {
     if (homeScore < 0 || awayScore < 0) {
-      throw new Error("Scores cannot be negative");
+      throw new DomainError("Scores cannot be negative");
     }
 
     const match = this.matches.find(
@@ -49,7 +51,7 @@ export class Scoreboard {
     );
 
     if (!match) {
-      throw new Error("Match not found");
+      throw new DomainError("Match not found");
     }
 
     match.homeScore = homeScore;
@@ -62,7 +64,7 @@ export class Scoreboard {
     );
 
     if (matchIndex === -1) {
-      throw new Error("Match not found");
+      throw new DomainError("Match not found");
     }
 
     this.matches.splice(matchIndex, 1);

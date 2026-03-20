@@ -9,12 +9,19 @@ export class Match {
   private _awayScore: number;
 
   public constructor(homeTeam: string, awayTeam: string, startedOrder: number) {
-    if (homeTeam === awayTeam) {
+    const normalizedHomeTeam = homeTeam.trim();
+    const normalizedAwayTeam = awayTeam.trim();
+
+    if (normalizedHomeTeam.length === 0 || normalizedAwayTeam.length === 0) {
+      throw new DomainError("Team names must be provided");
+    }
+
+    if (normalizedHomeTeam === normalizedAwayTeam) {
       throw new DomainError("Teams must be different");
     }
 
-    this.homeTeam = homeTeam;
-    this.awayTeam = awayTeam;
+    this.homeTeam = normalizedHomeTeam;
+    this.awayTeam = normalizedAwayTeam;
     this.startedOrder = startedOrder;
     this._homeScore = 0;
     this._awayScore = 0;

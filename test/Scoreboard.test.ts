@@ -130,4 +130,32 @@ describe("Scoreboard", () => {
       "Teams must be different",
     );
   });
+
+  it("does not allow blank team names", () => {
+    const scoreboard = new Scoreboard();
+
+    expect(() => scoreboard.startMatch("   ", "Canada")).toThrow(
+      "Team names must be provided",
+    );
+
+    expect(() => scoreboard.startMatch("Mexico", "   ")).toThrow(
+      "Team names must be provided",
+    );
+  });
+
+  it("normalizes team names by trimming surrounding whitespace", () => {
+    const scoreboard = new Scoreboard();
+
+    scoreboard.startMatch("  Mexico  ", "  Canada  ");
+
+    const summary = scoreboard.getSummary();
+
+    expect(summary).toHaveLength(1);
+    expect(summary[0]).toMatchObject({
+      homeTeam: "Mexico",
+      awayTeam: "Canada",
+      homeScore: 0,
+      awayScore: 0,
+    });
+  });
 });

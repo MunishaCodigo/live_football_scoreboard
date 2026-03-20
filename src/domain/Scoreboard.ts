@@ -1,22 +1,11 @@
+import { Match } from "./Match";
 import { DomainError } from "../errors/DomainError";
-
-type Match = {
-  homeTeam: string;
-  awayTeam: string;
-  homeScore: number;
-  awayScore: number;
-  startedOrder: number;
-};
 
 export class Scoreboard {
   private readonly matches: Match[] = [];
   private startSequence = 0;
 
   public startMatch(homeTeam: string, awayTeam: string): void {
-    if (homeTeam === awayTeam) {
-      throw new DomainError("Teams must be different");
-    }
-
     const existingMatch = this.matches.find(
       (item) => item.homeTeam === homeTeam && item.awayTeam === awayTeam,
     );
@@ -26,14 +15,7 @@ export class Scoreboard {
     }
 
     this.startSequence += 1;
-
-    this.matches.push({
-      homeTeam,
-      awayTeam,
-      homeScore: 0,
-      awayScore: 0,
-      startedOrder: this.startSequence,
-    });
+    this.matches.push(new Match(homeTeam, awayTeam, this.startSequence));
   }
 
   public updateScore(
@@ -42,20 +24,8 @@ export class Scoreboard {
     homeScore: number,
     awayScore: number,
   ): void {
-    if (homeScore < 0 || awayScore < 0) {
-      throw new DomainError("Scores cannot be negative");
-    }
-
-    const match = this.matches.find(
-      (item) => item.homeTeam === homeTeam && item.awayTeam === awayTeam,
-    );
-
-    if (!match) {
-      throw new DomainError("Match not found");
-    }
-
-    match.homeScore = homeScore;
-    match.awayScore = awayScore;
+    const match = this.findMatch(homeTeam, awayTeam);
+    match.updateScore(homeScore, awayScore);
   }
 
   public finishMatch(homeTeam: string, awayTeam: string): void {
@@ -70,18 +40,32 @@ export class Scoreboard {
     this.matches.splice(matchIndex, 1);
   }
 
-  public getSummary(): Array<Omit<Match, "startedOrder">> {
+  public getSummary(): Array<{
+    homeTeam: string;
+    awayTeam: string;
+    homeScore: number;
+    awayScore: number;
+  }> {
     return [...this.matches]
-      .sort((a, b) => {
-        const scoreDiff =
-          b.homeScore + b.awayScore - (a.homeScore + a.awayScore);
-
-        if (scoreDiff !== 0) {
-          return scoreDiff;
+      .sort((left, right) => {
+        if (right.totalScore !== left.totalScore) {
+          return right.totalScore - left.totalScore;
         }
 
-        return b.startedOrder - a.startedOrder;
+        return right.startedOrder - left.startedOrder;
       })
-      .map(({ startedOrder, ...rest }) => rest);
+      .map((match) => match.toSummaryItem());
+  }
+
+  private findMatch(homeTeam: string, awayTeam: string): Match {
+    const match = this.matches.find(
+      (item) => item.homeTeam === homeTeam && item.awayTeam === awayTeam,
+    );
+
+    if (!match) {
+      throw new DomainError("Match not found");
+    }
+
+    return match;
   }
 }

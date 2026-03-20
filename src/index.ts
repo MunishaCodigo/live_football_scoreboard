@@ -1,1 +1,1 @@
-export {};
+export { Scoreboard } from "./domain/Scoreboard";
